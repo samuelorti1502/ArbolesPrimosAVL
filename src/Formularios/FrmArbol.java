@@ -8,6 +8,7 @@ package Formularios;
 import Clases.NumeroPrimo;
 import Clases.Reloj;
 import Clases.TextoDinamico;
+import Clases.arbolAVL;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -42,6 +43,12 @@ public class FrmArbol extends javax.swing.JFrame {
     private ImageIcon Img;
     private Icon icono;
     private boolean continuar;
+    private arbolAVL rraiz;
+
+    private int h = 0;
+
+    private int izquierdo = 1;
+    private int derecho = 1;
 
     String strRecorrido = "";
 
@@ -132,6 +139,7 @@ public class FrmArbol extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         btnPostorden = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
+        btbAVL = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
         jButton3 = new javax.swing.JButton();
@@ -293,6 +301,11 @@ public class FrmArbol extends javax.swing.JFrame {
         jPanel4.add(jSeparator4);
 
         jButton1.setText("Agregar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         jPanel4.add(jButton1);
 
         btnPreorden.setText("Preorden");
@@ -342,6 +355,14 @@ public class FrmArbol extends javax.swing.JFrame {
             }
         });
         jPanel4.add(btnEliminar);
+
+        btbAVL.setText("Balancear AVL");
+        btbAVL.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btbAVLActionPerformed(evt);
+            }
+        });
+        jPanel4.add(btbAVL);
         jPanel4.add(jSeparator1);
         jPanel4.add(jSeparator2);
 
@@ -438,33 +459,16 @@ public class FrmArbol extends javax.swing.JFrame {
                                 System.out.println(numero);
                                 dibujarArbol(numero);
                                 primosEncontrados++;
-                                primosEncontrados++;
                             }
 
                             numero++;
 
-                            /*Random random = new Random();
-
-                            while (mylist.size() > 1) {
-                                int randomIndex = random.nextInt(mylist.size());
-
-                                jTree1.collapseRow(mylist.size());
-
-                                //System.out.println("Not Repeated Random Number "+mylist.get(randomIndex));
-                                DibujarNumero(mylist.get(randomIndex));
-                                System.out.println(mylist.get(randomIndex));
-
-                                dibujarArbol(mylist.get(randomIndex));
-                                mylist.remove(randomIndex);
-                            }*/
                             Thread.sleep(10);
 
                             if (primosEncontrados >= cantidadPrimos) {
                                 setContinuar(false);
                             }
                         }
-
-                        //System.out.println("mylist = " + mylist);
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(null, "txtS_SActionPerformed(). " + e.getMessage());
                     }
@@ -628,11 +632,10 @@ public class FrmArbol extends javax.swing.JFrame {
                 throw new Exception("¡El árbol está vacío!");
             }
 
-                        
             System.out.println("nodo numero " + mylist.get(Integer.parseInt(txtValor.getText())));
-            
+
             int myNode = mylist.get(Integer.parseInt(txtValor.getText()));
-            
+
             DefaultMutableTreeNode nodoEncontrado = null;
             DefaultMutableTreeNode nodoRaiz = (DefaultMutableTreeNode) jTree1.getModel().getRoot();
 
@@ -673,6 +676,45 @@ public class FrmArbol extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         //new FrmPreguntas(mylist.get(0), mylist.get(mylist.size()-1), mylist.get(738), )).setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void btbAVLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbAVLActionPerformed
+
+        System.out.println("Altura Izquierdo " + " - " + getIzquierdo());
+        System.out.println("Altura Derecho " + " - " + getDerecho());
+
+        /*DefaultMutableTreeNode nodoRaiz = (DefaultMutableTreeNode) jTree1.getModel().getRoot();
+        DefaultMutableTreeNode nodoAuxiliar = nodoRaiz;
+        DefaultMutableTreeNode nodoPadre = null;
+
+        if (nodoRaiz != null) {
+            nodoAuxiliar = nodoRaiz;
+            
+            String s = nodoAuxiliar.getUserObject().toString().split("-")[1].trim();
+            int valorNodoActual = Integer.parseInt(s);
+            
+            System.out.println("Altura " + nodoAuxiliar.getUserObject().toString() + " - " + obtenerFE(nodoAuxiliar));
+
+            while (true) {
+                nodoPadre = nodoAuxiliar;
+                
+                System.out.println("Altura " + nodoAuxiliar.getUserObject().toString() + " - " + obtenerFE(nodoPadre));
+                
+                //nodoAuxiliar = (DefaultMutableTreeNode) nodoAuxiliar.getFirstChild();
+                
+                /*if (nodoAuxiliar.getUserObject().toString().split("-")[0].trim().equals("I")) {
+                    System.out.println("nodoAIzquierdo = " + nodoAuxiliar.getLeafCount());
+                } 
+                if (nodoAuxiliar.getUserObject().toString().split("-")[0].trim().equals("D")) {
+                    System.out.println("nodoDerecho = " + nodoAuxiliar.getLeafCount());
+                }
+            }
+
+        }*/
+    }//GEN-LAST:event_btbAVLActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        dibujarArbol(Integer.parseInt(txtValor.getText()));
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void DibujarNumero(int numero) {
         try {
@@ -742,65 +784,82 @@ public class FrmArbol extends javax.swing.JFrame {
     }
 
     private void dibujarArbol(int numero) {
+        DefaultMutableTreeNode nodoRaiz = (DefaultMutableTreeNode) jTree1.getModel().getRoot();
+        DefaultMutableTreeNode nodoAuxiliar = nodoRaiz;
 
-        int nodos = 1;
-        long dateTimeStart = System.currentTimeMillis();
+        int valorNuevo = 0;
 
         try {
             jTree1.repaint();
-
-            int valorNuevo = 0;
-            try {
-                valorNuevo = numero;
-            } catch (Exception ex) {
-                throw new Exception("¡Ingrese un entero!");
-            }
-
-            DefaultMutableTreeNode nodoRaiz = (DefaultMutableTreeNode) jTree1.getModel().getRoot();
+            valorNuevo = numero;
 
             if (nodoRaiz != null) {
-                DefaultMutableTreeNode nodoAuxiliar = nodoRaiz;
-                DefaultMutableTreeNode nodoPadre;
+                nodoAuxiliar = nodoRaiz;
 
                 while (true) {
-
-                    nodoPadre = nodoAuxiliar;
                     String s = nodoAuxiliar.getUserObject().toString().split("-")[1].trim();
                     int valorNodoActual = Integer.parseInt(s);
+
                     if (valorNuevo < valorNodoActual) {
                         nodoAuxiliar = (DefaultMutableTreeNode) nodoAuxiliar.getFirstChild();
 
+                        //System.out.println("Valor nuevo es menor, nuevo nodo izquierdo");
                         if (nodoAuxiliar.getUserObject().toString().equals("I - NULL")) {
+                            setIzquierdo(getIzquierdo() + 1);
 
                             nodoAuxiliar.setUserObject("I - " + valorNuevo);
                             nodoAuxiliar.add(new DefaultMutableTreeNode("I - NULL"));
                             nodoAuxiliar.add(new DefaultMutableTreeNode("D - NULL"));
 
-                            jTree1.expandPath(new TreePath(nodoAuxiliar.getPath()));
                             txtConsola.append("Nodo agregado: " + numero + System.lineSeparator());
 
                             return;
                         }
+
                     } else {
                         nodoAuxiliar = (DefaultMutableTreeNode) nodoAuxiliar.getLastChild();
 
                         if (nodoAuxiliar.getUserObject().toString().equals("D - NULL")) {
-
+                            setDerecho(getDerecho() + 1);
+                            //System.out.println("Valor nuevo es mayor, nuevo nodo derecho");
                             nodoAuxiliar.setUserObject("D - " + valorNuevo);
                             nodoAuxiliar.add(new DefaultMutableTreeNode("I - NULL"));
                             nodoAuxiliar.add(new DefaultMutableTreeNode("D - NULL"));
 
-                            jTree1.expandPath(new TreePath(nodoAuxiliar.getPath()));
-                            //txtConsola.append("Nuevo nodo agregado: " + numero + System.lineSeparator());
+                            if (this.getDerecho() - this.getIzquierdo() <= 1) {
+                                System.out.println("Balanceado");
+                            } else {
+                                System.out.println("No Balanceado");
+                                System.out.println("nodoAuxiliar.getUserObject().toString() = " + nodoAuxiliar.getUserObject().toString());
+
+                                if (nodoRaiz.getFirstChild().toString().equals("I - NULL")) {
+
+                                    /*nodoAuxiliar = (DefaultMutableTreeNode) nodoAuxiliar.getLastChild();
+                                    DefaultTreeModel modeloArbol = (DefaultTreeModel) jTree1.getModel();
+                                    modeloArbol.removeNodeFromParent(nodoAuxiliar);*/
+
+                                    nodoAuxiliar = (DefaultMutableTreeNode) nodoRaiz.getFirstChild();
+
+                                    nodoAuxiliar.setUserObject("I - " + valorNuevo);
+                                    nodoAuxiliar.add(new DefaultMutableTreeNode("I - NULL"));
+                                    nodoAuxiliar.add(new DefaultMutableTreeNode("D - NULL"));
+
+                                    System.out.println("El I del raiz esta vacio");
+                                } else {
+                                    System.out.println("El I del raiz no esta vacio");
+                                }
+
+                            }
+
                             txtConsola.append("Nodo agregado: " + numero + System.lineSeparator());
-                            scrollDown();
 
                             return;
                         }
                     }
-                }
-            } else {
 
+                }
+
+            } else {
                 nodoRaiz = new DefaultMutableTreeNode("R - " + numero);
                 DefaultMutableTreeNode nodoIzquierdo = new DefaultMutableTreeNode("I - NULL");
                 DefaultMutableTreeNode nodoDerecho = new DefaultMutableTreeNode("D - NULL");
@@ -809,21 +868,49 @@ public class FrmArbol extends javax.swing.JFrame {
                 nodoRaiz.add(nodoDerecho);
 
                 DefaultTreeModel modeloArbol = (DefaultTreeModel) jTree1.getModel();
-                modeloArbol.reload();
+                //modeloArbol.reload();
                 modeloArbol.setRoot(nodoRaiz);
 
                 txtConsola.append("Nodo RAÍZ agregado: " + numero + System.lineSeparator());
 
                 scrollDown();
-
             }
-        } catch (Exception ex) {
-            txtConsola.append("Error en btnAgregarActionPerformed(): " + ex.getMessage() + System.lineSeparator());
+
+        } catch (Exception e) {
         }
 
-        long dateTimeEnd = System.currentTimeMillis();
-        //txtConsola.append("Se tardó: " + getDate((dateTimeEnd - dateTimeStart), "mm:ss:SSS") + " en generar el arbol\n");
+    }
 
+    public int obtenerFE(DefaultMutableTreeNode nodo) {
+        if (nodo == null) {
+            return -1;
+        } else {
+            nodo = (DefaultMutableTreeNode) nodo.getLastChild();
+            TreePath rutaNodo = new TreePath(nodo.getPath());
+            jTree1.setSelectionPath(rutaNodo);
+            jTree1.expandPath(rutaNodo);
+            return getIzquierdo();
+        }
+    }
+
+    public arbolAVL rotacionIzq(arbolAVL c) {
+        /*arbolAVL aux = c.getHijoIz();
+        c.setHijoIz(aux.getHijoDer());
+        aux.setHijoDer(c);
+        c.setFe(Math.max(obtenerFE(c.getHijoIz()), obtenerFE(c.getHijoDer())) + 1);
+        aux.setFe(Math.max(obtenerFE(aux.getHijoIz()), obtenerFE(aux.getHijoDer())) + 1);*/
+
+        return c;
+    }
+
+    public arbolAVL rotacionDer(arbolAVL c) {
+        /*arbolAVL aux = c.getHijoDer();
+        c.setHijoDer(aux.getHijoIz());
+        aux.setHijoDer(c);
+        c.setFe(Math.max(obtenerFE(c.getHijoIz()), obtenerFE(c.getHijoDer())) + 1);
+        aux.setFe(Math.max(obtenerFE(aux.getHijoIz()), obtenerFE(aux.getHijoDer())) + 1);*/
+
+        return c;
     }
 
     public void RecorridoPreorden(DefaultMutableTreeNode nodoRaiz) {
@@ -899,6 +986,7 @@ public class FrmArbol extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btbAVL;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnInorden;
@@ -943,5 +1031,47 @@ public class FrmArbol extends javax.swing.JFrame {
      */
     public void setContinuar(boolean continuar) {
         this.continuar = continuar;
+    }
+
+    /**
+     * @return the h
+     */
+    public int getH() {
+        return h;
+    }
+
+    /**
+     * @param h the h to set
+     */
+    public void setH(int h) {
+        this.h = h;
+    }
+
+    /**
+     * @return the izquierdo
+     */
+    public int getIzquierdo() {
+        return izquierdo;
+    }
+
+    /**
+     * @param izquierdo the izquierdo to set
+     */
+    public void setIzquierdo(int izquierdo) {
+        this.izquierdo = izquierdo;
+    }
+
+    /**
+     * @return the derecho
+     */
+    public int getDerecho() {
+        return derecho;
+    }
+
+    /**
+     * @param derecho the derecho to set
+     */
+    public void setDerecho(int derecho) {
+        this.derecho = derecho;
     }
 }
